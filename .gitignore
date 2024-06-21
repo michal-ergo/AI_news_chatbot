@@ -1,0 +1,9 @@
+# Environments
+.env
+myenv/
+
+first_version.py
+first_version_news.py
+
+__cycache__/
+app.log
