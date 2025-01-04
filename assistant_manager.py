@@ -1,6 +1,7 @@
 """AI Assistant"""
 import os
 import json
+import sqlite3
 from news_api_client import NewsAPIClient
 
 class AssistantManager:
@@ -61,6 +62,8 @@ class AssistantManager:
                 news_output = self.get_news(topic)
                 output = self.format_output(news_output)
 
+                self.save_news_to_db(news_output)
+
                 tools_outputs.append({"tool_call_id": call["id"], "output": output})
 
         return tools_outputs
@@ -72,3 +75,12 @@ class AssistantManager:
     
     def get_summary(self):
         return self.summary
+
+    def save_news_to_db(self, news_output):
+        conn = sqlite3.connect('news.db')
+        c = conn.cursor()
+        for article in news_output:
+            c.execute("INSERT INTO news(title, author, url, description) VALUES (:title, :author, :url, :desc)",
+                      {"title": article["title"], "author": article["author"], "url": article["url"], "desc": article["description"]})
+        conn.commit()
+        conn.close()
